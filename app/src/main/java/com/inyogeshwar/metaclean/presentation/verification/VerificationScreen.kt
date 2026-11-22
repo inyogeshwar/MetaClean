@@ -5,12 +5,15 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,6 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.inyogeshwar.metaclean.core.file.FileUtils
 import com.inyogeshwar.metaclean.core.ui.components.EmptyStateView
+import com.inyogeshwar.metaclean.core.ui.components.IOSBadge
+import com.inyogeshwar.metaclean.core.ui.components.IOSDivider
+import com.inyogeshwar.metaclean.core.ui.components.IOSGroupedCard
+import com.inyogeshwar.metaclean.core.ui.components.IOSSectionHeader
 import com.inyogeshwar.metaclean.core.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +46,7 @@ fun VerificationScreen(
     val context = LocalContext.current
     val item by viewModel.item.collectAsState()
 
-    var selectedTab by remember { mutableStateOf(0) } // 0 = Audit Diff, 1 = Original, 2 = Cleaned
+    var selectedTab by remember { mutableStateOf(0) }
 
     val saveFileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument(item?.mimeType ?: "image/jpeg")
@@ -58,15 +65,15 @@ fun VerificationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Privacy Verification Audit", fontWeight = FontWeight.Bold) },
+                title = { Text("Audit Report", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = iOSTextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = iOSSystemBlue)
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.shareCleanedImage(context) }) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
+                        Icon(Icons.Default.Share, contentDescription = "Share", tint = iOSSystemBlue)
                     }
                     IconButton(onClick = {
                         val originalName = item?.fileName ?: "cleaned.jpg"
@@ -74,10 +81,10 @@ fun VerificationScreen(
                         val base = originalName.substringBeforeLast(".")
                         saveFileLauncher.launch("${base}_clean.$ext")
                     }) {
-                        Icon(Icons.Default.SaveAlt, contentDescription = "Save to Device")
+                        Icon(Icons.Default.SaveAlt, contentDescription = "Save", tint = iOSSystemBlue)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = iOSBackgroundDark)
             )
         }
     ) { padding ->
@@ -100,17 +107,13 @@ fun VerificationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(iOSBackgroundDark)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Verified Status Banner
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SuccessGreen.copy(alpha = 0.12f))
-                ) {
+                // Status Pill Card
+                IOSGroupedCard {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -119,34 +122,34 @@ fun VerificationScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(48.dp)
+                                .size(44.dp)
                                 .clip(CircleShape)
-                                .background(SuccessGreen),
+                                .background(iOSSystemGreen),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+                            Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
                         }
 
                         Spacer(modifier = Modifier.width(14.dp))
 
                         Column {
                             Text(
-                                text = "Verified Clean & Privacy Protected",
-                                style = MaterialTheme.typography.titleMedium,
+                                text = "Verified Clean & Private",
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = SuccessGreen
+                                color = iOSSystemGreen
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = ver.summaryNotes,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                fontSize = 12.sp,
+                                color = iOSTextSecondary
                             )
                         }
                     }
                 }
 
-                // Visual Before / After Comparison Cards
+                // Visual Before & After Comparison
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -155,7 +158,7 @@ fun VerificationScreen(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Original Copy", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Original", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = iOSTextSecondary)
                         Spacer(modifier = Modifier.height(6.dp))
                         AsyncImage(
                             model = mediaItem.originalUri,
@@ -163,14 +166,14 @@ fun VerificationScreen(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp)
+                                .height(110.dp)
                                 .clip(RoundedCornerShape(12.dp))
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = FileUtils.formatFileSize(ver.originalSizeBytes),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontSize = 12.sp,
+                            color = iOSTextSecondary
                         )
                     }
 
@@ -178,7 +181,7 @@ fun VerificationScreen(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Cleaned Output", style = MaterialTheme.typography.labelMedium, color = AccentSecondary)
+                        Text("Cleaned Output", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = iOSSystemTeal)
                         Spacer(modifier = Modifier.height(6.dp))
                         AsyncImage(
                             model = mediaItem.cleanedUri,
@@ -186,176 +189,141 @@ fun VerificationScreen(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp)
+                                .height(110.dp)
                                 .clip(RoundedCornerShape(12.dp))
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = FileUtils.formatFileSize(ver.cleanedSizeBytes),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AccentSecondary
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = iOSSystemTeal
                         )
                     }
                 }
 
-                // Quantitative Metric Cards
+                // Metrics Triple Cards
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    VerificationMetricCard(
-                        title = "Removed Fields",
-                        value = "${ver.removedFields.size}",
-                        subtitle = "Personal tags stripped",
+                    IOSMetricCard(
+                        title = "Removed",
+                        value = "${ver.removedFields.size} fields",
+                        subtitle = "Personal tags",
                         icon = Icons.Default.Shield,
-                        tint = SuccessGreen,
+                        tint = iOSSystemGreen,
                         modifier = Modifier.weight(1f)
                     )
 
-                    VerificationMetricCard(
+                    IOSMetricCard(
                         title = "Dimensions",
                         value = if (ver.dimensionsPreserved) "Preserved" else "Modified",
-                        subtitle = "${ver.cleanedDimensions.first} × ${ver.cleanedDimensions.second} px",
+                        subtitle = "${ver.cleanedDimensions.first}×${ver.cleanedDimensions.second}",
                         icon = Icons.Default.AspectRatio,
-                        tint = AccentSecondary,
+                        tint = iOSSystemBlue,
                         modifier = Modifier.weight(1f)
                     )
 
-                    VerificationMetricCard(
-                        title = "Footprint Delta",
+                    IOSMetricCard(
+                        title = "Stripped",
                         value = "-${ver.sizeReductionPercentage}%",
                         subtitle = FileUtils.formatFileSize(ver.sizeDifferenceBytes),
-                        icon = Icons.Default.TrendingDown,
-                        tint = AccentTertiary,
+                        icon = Icons.AutoMirrored.Filled.TrendingDown,
+                        tint = iOSSystemIndigo,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                // Comparison Category Tabs
-                TabRow(
-                    selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = AccentPrimary,
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp))
+                // Segmented Tab Controls
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(iOSCardDark)
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Tab(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        text = { Text("Audit Diff", fontSize = 12.sp) }
-                    )
-                    Tab(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        text = { Text("Original Tags", fontSize = 12.sp) }
-                    )
-                    Tab(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
-                        text = { Text("Cleaned Tags", fontSize = 12.sp) }
-                    )
+                    val tabs = listOf("Audit Diff", "Original Tags", "Cleaned Tags")
+                    tabs.forEachIndexed { index, title ->
+                        val isSelected = selectedTab == index
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) iOSCardElevated else Color.Transparent)
+                                .clickable { selectedTab = index }
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = title,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                color = if (isSelected) iOSTextPrimary else iOSTextSecondary
+                            )
+                        }
+                    }
                 }
 
                 when (selectedTab) {
                     0 -> {
-                        // Audit Diff List
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
+                        IOSGroupedCard {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Privacy Sanitization Audit",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                                Text("Sanitization Checklist", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = iOSTextPrimary)
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 if (ver.removedFields.isNotEmpty()) {
-                                    Text(
-                                        text = "Successfully Removed (${ver.removedFields.size}):",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = SuccessGreen
-                                    )
+                                    Text("Successfully Removed (${ver.removedFields.size}):", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = iOSSystemGreen)
                                     Spacer(modifier = Modifier.height(6.dp))
-                                    ver.removedFields.forEach { field ->
-                                        AuditFieldRow(field, isRemoved = true)
+                                    ver.removedFields.forEach { f ->
+                                        Row(modifier = Modifier.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = iOSSystemGreen, modifier = Modifier.size(15.dp))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(f, fontSize = 12.sp, color = iOSTextPrimary)
+                                        }
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                Text(
-                                    text = "Retained Technical Properties (${ver.retainedFields.size}):",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = AccentSecondary
-                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text("Retained Properties (${ver.retainedFields.size}):", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = iOSSystemTeal)
                                 Spacer(modifier = Modifier.height(6.dp))
-                                ver.retainedFields.forEach { field ->
-                                    AuditFieldRow(field, isRemoved = false)
-                                }
-
-                                if (ver.unremovableFields.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        text = "Informational / Read-Only Elements (${ver.unremovableFields.size}):",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = WarningAmber
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    ver.unremovableFields.forEach { field ->
-                                        AuditFieldRow(field, isWarning = true)
+                                ver.retainedFields.forEach { f ->
+                                    Row(modifier = Modifier.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Done, contentDescription = null, tint = iOSSystemTeal, modifier = Modifier.size(15.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(f, fontSize = 12.sp, color = iOSTextSecondary)
                                     }
                                 }
                             }
                         }
                     }
                     1 -> {
-                        // Original Tags
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
+                        IOSGroupedCard {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text("Original Metadata Snapshot", style = MaterialTheme.typography.titleMedium)
+                                Text("Original Metadata", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = iOSTextPrimary)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 origMeta?.exifData?.allTags?.forEach { (k, v) ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 3.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(k, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        Text(v, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+                                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                        Text(k, fontSize = 12.sp, color = iOSTextSecondary)
+                                        Text(v, fontSize = 12.sp, color = iOSTextPrimary)
                                     }
                                 }
                             }
                         }
                     }
                     2 -> {
-                        // Cleaned Tags
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
+                        IOSGroupedCard {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text("Cleaned Output Metadata Snapshot", style = MaterialTheme.typography.titleMedium)
+                                Text("Cleaned Output Metadata", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = iOSTextPrimary)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 if (cleanMeta?.exifData?.allTags?.isEmpty() == true) {
-                                    Text("All personal EXIF tags completely scrubbed.", style = MaterialTheme.typography.bodySmall, color = SuccessGreen)
+                                    Text("All personal EXIF tags completely scrubbed.", fontSize = 12.sp, color = iOSSystemGreen)
                                 } else {
                                     cleanMeta?.exifData?.allTags?.forEach { (k, v) ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 3.dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text(k, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                            Text(v, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+                                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Text(k, fontSize = 12.sp, color = iOSTextSecondary)
+                                            Text(v, fontSize = 12.sp, color = iOSTextPrimary)
                                         }
                                     }
                                 }
@@ -364,19 +332,20 @@ fun VerificationScreen(
                     }
                 }
 
-                // Export & Share Action Bar
+                // Actions
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    OutlinedButton(
+                    Button(
                         onClick = { viewModel.shareCleanedImage(context) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(10.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = iOSCardElevated)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Share Cleaned")
+                        Text("Share Cleaned", color = iOSTextPrimary, fontWeight = FontWeight.Medium)
                     }
 
                     Button(
@@ -386,22 +355,24 @@ fun VerificationScreen(
                             val base = originalName.substringBeforeLast(".")
                             saveFileLauncher.launch("${base}_clean.$ext")
                         },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentPrimary)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
                     ) {
-                        Icon(Icons.Default.SaveAlt, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Save Copy")
+                        Text("Save Copy", color = Color.White, fontWeight = FontWeight.SemiBold)
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
 @Composable
-private fun VerificationMetricCard(
+private fun IOSMetricCard(
     title: String,
     value: String,
     subtitle: String,
@@ -409,50 +380,12 @@ private fun VerificationMetricCard(
     tint: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.clip(RoundedCornerShape(12.dp)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+    IOSGroupedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
             Icon(imageVector = icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(value, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = iOSTextPrimary)
+            Text(subtitle, fontSize = 10.sp, color = iOSTextSecondary)
         }
-    }
-}
-
-@Composable
-private fun AuditFieldRow(
-    fieldName: String,
-    isRemoved: Boolean = false,
-    isWarning: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = when {
-                isRemoved -> Icons.Default.CheckCircle
-                isWarning -> Icons.Default.Info
-                else -> Icons.Default.Done
-            },
-            contentDescription = null,
-            tint = when {
-                isRemoved -> SuccessGreen
-                isWarning -> WarningAmber
-                else -> AccentSecondary
-            },
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = fieldName,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
     }
 }

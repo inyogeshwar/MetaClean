@@ -2,36 +2,45 @@ package com.inyogeshwar.metaclean.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Dark Palette (Primary aesthetic)
-val BackgroundDark = Color(0xFF0D0F12)
-val SurfaceDark = Color(0xFF15181E)
-val SurfaceVariantDark = Color(0xFF1E222B)
-val SurfaceContainerDark = Color(0xFF262C38)
-val SurfaceBorderDark = Color(0xFF2E3442)
+// iOS Dark Cupertino Palette (Clean, lightweight, modern)
+val iOSBackgroundDark = Color(0xFF000000) // Pure OLED pitch black
+val iOSCardDark = Color(0xFF1C1C1E)       // iOS Secondary Grouped Background
+val iOSCardElevated = Color(0xFF2C2C2E)   // iOS Tertiary Grouped Background
+val iOSSeparator = Color(0xFF38383A)      // iOS Hairline Separator
 
-val AccentPrimary = Color(0xFF6366F1) // Electric Violet/Indigo
-val AccentPrimaryVariant = Color(0xFF4F46E5)
-val AccentSecondary = Color(0xFF38BDF8) // Sky Cyan
-val AccentTertiary = Color(0xFFA855F7) // Purple
+// iOS Vibrant System Accents
+val iOSSystemBlue = Color(0xFF0A84FF)     // Electric iOS Blue
+val iOSSystemIndigo = Color(0xFF5E5CE6)   // iOS Purple/Indigo
+val iOSSystemTeal = Color(0xFF64D2FF)     // iOS Cyan/Teal
+val iOSSystemGreen = Color(0xFF30D158)    // iOS Vibrant Green
+val iOSSystemOrange = Color(0xFFFF9F0A)   // iOS Amber/Orange
+val iOSSystemRed = Color(0xFFFF453A)      // iOS Coral Red
 
-val SuccessGreen = Color(0xFF10B981)
-val SuccessGreenContainer = Color(0xFF064E3B)
-val WarningAmber = Color(0xFFF59E0B)
-val WarningAmberContainer = Color(0xFF78350F)
-val DangerRed = Color(0xFFEF4444)
-val DangerRedContainer = Color(0xFF7F1D1D)
+val iOSTextPrimary = Color(0xFFFFFFFF)
+val iOSTextSecondary = Color(0xFF8E8E93)  // iOS Subheadline Gray
+val iOSTextTertiary = Color(0xFF636366)
 
-val TextPrimaryDark = Color(0xFFF3F4F6)
-val TextSecondaryDark = Color(0xFF9CA3AF)
-val TextTertiaryDark = Color(0xFF6B7280)
+// iOS Light Cupertino Palette
+val iOSBackgroundLight = Color(0xFFF2F2F7) // iOS Grouped Background Light
+val iOSCardLight = Color(0xFFFFFFFF)       // White card
+val iOSCardElevatedLight = Color(0xFFE5E5EA)
+val iOSSeparatorLight = Color(0xFFC6C6C8)
 
-// Light Palette (Optional setting)
-val BackgroundLight = Color(0xFFF8FAFC)
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceVariantLight = Color(0xFFF1F5F9)
-val SurfaceContainerLight = Color(0xFFE2E8F0)
-val SurfaceBorderLight = Color(0xFFCBD5E1)
+val iOSTextPrimaryLight = Color(0xFF000000)
+val iOSTextSecondaryLight = Color(0xFF8E8E93)
+val iOSTextTertiaryLight = Color(0xFFAEAEB2)
 
-val TextPrimaryLight = Color(0xFF0F172A)
-val TextSecondaryLight = Color(0xFF475569)
-val TextTertiaryLight = Color(0xFF94A3B8)
+// Legacy aliases for compatibility
+val AccentPrimary = iOSSystemBlue
+val AccentSecondary = iOSSystemTeal
+val AccentTertiary = iOSSystemIndigo
+val SuccessGreen = iOSSystemGreen
+val DangerRed = iOSSystemRed
+val WarningAmber = iOSSystemOrange
+val TextPrimaryDark = iOSTextPrimary
+val TextSecondaryDark = iOSTextSecondary
+val SurfaceDark = iOSCardDark
+val SurfaceVariantDark = iOSCardDark
+val SurfaceContainerDark = iOSCardElevated
+val SurfaceBorderDark = iOSSeparator
+val BackgroundDark = iOSBackgroundDark

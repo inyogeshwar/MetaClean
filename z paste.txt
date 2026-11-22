@@ -1,0 +1,562 @@
+dekho DeleteFootprints.ai\
+Remove Metadata\
+Remove Video AI Labels\
+AI Text Cleaner\
+Edit Metadata\
+View Metadata\
+[**imageexif.tools**](https://exif.tools/) ([image](https://exif.tools/static/icons/exif.tools-logo-80.4dd49ea020ba.png))
+
+**Metadata tools[Metadata Viewer](https://exif.tools/)[ExifTool](https://exif.tools/exiftool)[file(1)](https://exif.tools/file)**
+
+Language: English
+
+[**Skip to metadata viewer**](https://exif.tools/#app)
+
+# Every  has a *story.*
+
+**Choose a filePaste a link**
+
+Choose a file to inspect
+
+Metadata ready.
+
+LOCAL PROCESSING
+
+**YOUR FILE, EXPLAINED**
+
+## 7ba35549-9618-4acd-964d-40d4a3324dde.png
+
+**Export metadataStart over**
+
+[**Overview**](https://exif.tools/#overview)[All metadata ](https://exif.tools/#allMetadata)
+
+Preview of the selected imageOriginal image preview · Original file unchanged
+
+PNG2,752 × 1,536 px
+
+**&#x20;FILE DETAILS**
+
+File size
+
+8.1 MB
+
+Image size
+
+2,752 × 1,536 px · 4.2 MP
+
+File type
+
+PNG image
+
+**THERE’S MORE TO DISCOVER**
+
+## Go beyond the basics.
+
+Reveal extra camera details, editing history, and hidden tags when present.
+
+
+
+This scan took too long and was stopped. Your basic results are still here. Try a smaller file or scan again.
+
+[**Strip image metadata ↗**](https://exif.tools/strip)
+
+**Try full scan again**
+
+**All metadata**7 tags
+
+Explore the original tags and values saved in your file.
+
+Filter metadata tags and values
+
+**IHDR / PNG (7)**
+
+| **Tag**      | **Value**   |                 |
+| :----------- | :---------- | --------------- |
+| Bit Depth    | BitDepth    | 8               |
+| Color Type   | ColorType   | RGB with Alpha  |
+| Compression  | Compression | Deflate/Inflate |
+| Filter       | Filter      | Adaptive        |
+| Image Height | ImageHeight | 1536            |
+| Image Width  | ImageWidth  | 2752            |
+| Interlace    | Interlace   | Noninterlaced   |
+
+**Technical file details & checksums**
+
+Name
+
+7ba35549-9618-4acd-964d-40d4a3324dde.png
+
+Source
+
+Local file
+
+Extension
+
+.png
+
+Detected MIME
+
+image/png
+
+Signature MIME
+
+image/png
+
+Size
+
+8.15 MB
+
+Signature
+
+PNG (89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52)
+
+Head Hex
+
+89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52
+
+Head Text
+
+.PNG . ... IHDR.. ...........K. ..h#caBX..h#jumb....jumdc2pa...
+
+MD5
+
+978d925b4b45ab38aa4e66ec41e7edd2
+
+SHA-1
+
+a888527abbc524c5cd74209d161d302a73d2f5ac
+
+SHA-256
+
+5372c356242a2d85f8acde88d19c3d3cb842b82c5a35af17002cf17bf543f3ed
+
+SHA-512
+
+4bf0cb2bb95532956eeb97760e1aabb31f81e523b532a63cc15165342cbf81681987a5faf41a17102e13d21a5affb6690e83b9eae17fee3b4855e4510ae37f3e
+
+CRC32
+
+91af80e3
+
+Adler32
+
+8c2f262b
+
+**First 64 bytes**
+
+89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52 00 00 0a c0 00 00 06 00 08 06 00 00 00 c2 4b 1f 0d 00 00 68 23 63 61 42 58 00 00 68 23 6a 75 6d 62 00 00 00 1e 6a 75 6d 64 63 32 70 61 00 11 00
+
+**ASCII preview**
+
+.PNG . ... IHDR.. ...........K. ..h#caBX..h#jumb....jumdc2pa...
+
+**Raw JSON data**
+
+{   "name": "7ba35549-9618-4acd-964d-40d4a3324dde.png",   "ext": "png",   "mimeType": "image/png",   "detectedMime": "image/png",   "size": 8543030,   "source": "file",   "url": "",   "signature": {     "ext": "png",     "mime": "image/png",     "label": "PNG (89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52)"   },   "headHex": "89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52",   "headHexLong": "89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52 00 00 0a c0 00 00 06 00 08 06 00 00 00 c2 4b 1f 0d 00 00 68 23 63 61 42 58 00 00 68 23 6a 75 6d 62 00 00 00 1e 6a 75 6d 64 63 32 70 61 00 11 00",   "headText": ".PNG . ... IHDR.. ...........K. ..h#caBX..h#jumb....jumdc2pa...",   "headTextLong": ".PNG\r\n.\n...\rIHDR..\n...........K.\r..h#caBX..h#jumb....jumdc2pa...",   "hashes": {     "md5": "978d925b4b45ab38aa4e66ec41e7edd2",     "sha1": "a888527abbc524c5cd74209d161d302a73d2f5ac",     "sha256": "5372c356242a2d85f8acde88d19c3d3cb842b82c5a35af17002cf17bf543f3ed",     "sha512": "4bf0cb2bb95532956eeb97760e1aabb31f81e523b532a63cc15165342cbf81681987a5faf41a17102e13d21a5affb6690e83b9eae17fee3b4855e4510ae37f3e",     "crc32": "91af80e3",     "adler32": "8c2f262b"   },   "relatedExts": [],   "viewer": {     "slug": "",     "via": "standalone",     "detectedMime": "image/png"   },   "arrayBuffer": {},   "parserReports": [     {       "id": "exifr",       "label": "exifr",       "status": "success",       "note": "Broad parser for TIFF/EXIF, XMP, ICC, IPTC, JFIF, and IHDR.",       "detail": "Parsed structured metadata."     },     {       "id": "piexifjs",       "label": "piexifjs",       "status": "skipped",       "note": "JPEG-focused EXIF parser and fallback.",       "detail": "Skipped because the file is not JPEG-like."     },     {       "id": "pdf-metadata",       "label": "pdf metadata",       "status": "skipped",       "note": "PDF-specific metadata parser.",       "detail": "Skipped because the file is not PDF."     },     {       "id": "kamadak-exif",       "label": "kamadak-exif (WASM)",       "status": "skipped",       "note": "No browser-ready build is bundled in this repo. Adapter hook is available via window\.EXIF_WASM_ADAPTERS.",       "detail": ""     },     {       "id": "rexif",       "label": "rexif (WASM)",       "status": "skipped",       "note": "No browser-ready build is bundled in this repo. Adapter hook is available via window\.EXIF_WASM_ADAPTERS.",       "detail": ""     }   ],   "metadata": [     {       "section": "ihdr",       "label": "Bit Depth",       "keyPath": "BitDepth",       "values": [         "8"       ]     },     {       "section": "ihdr",       "label": "Color Type",       "keyPath": "ColorType",       "values": [         "RGB with Alpha"       ]     },     {       "section": "ihdr",       "label": "Compression",       "keyPath": "Compression",       "values": [         "Deflate/Inflate"       ]     },     {       "section": "ihdr",       "label": "Filter",       "keyPath": "Filter",       "values": [         "Adaptive"       ]     },     {       "section": "ihdr",       "label": "Image Height",       "keyPath": "ImageHeight",       "values": [         "1536"       ]     },     {       "section": "ihdr",       "label": "Image Width",       "keyPath": "ImageWidth",       "values": [         "2752"       ]     },     {       "section": "ihdr",       "label": "Interlace",       "keyPath": "Interlace",       "values": [         "Noninterlaced"       ]     }   ],   "responseHeaders": null,   "parserResults": {     "exifr": {       "ihdr": {         "ImageWidth": 2752,         "ImageHeight": 1536,         "BitDepth": 8,         "ColorType": "RGB with Alpha",         "Compression": "Deflate/Inflate",         "Filter": "Adaptive",         "Interlace": "Noninterlaced"       }     },     "piexifjs": null,     "pdf": null   },   "geoPoint": null }
+
+**A LITTLE CONTEXT**
+
+## What’s hiding in your file?
+
+Metadata is information saved inside a file. See a photo’s camera settings and GPS location, or a PDF’s title, author, creator, producer, page count, and saved dates. Available details depend on the file.
+
+**Why are some details missing?**
+
+
+
+**Does this upload my file?**
+
+
+
+**What else can I inspect?**
+
+
+
+## Metadata tools
+
+Inspect metadata and identify files.
+
+**[Metadata Viewer](https://exif.tools/)[ExifTool](https://exif.tools/exiftool)[file(1)](https://exif.tools/file)**
+
+## Image tools
+
+Recover, clean, resize, and invert images.
+
+**[Remove BG](https://exif.tools/remove-bg)[Recovery](https://exif.tools/image-recovery)[Strip](https://exif.tools/strip)[Optimize](https://exif.tools/optimize)[Resize](https://exif.tools/resize)[Invert](https://exif.tools/invert-image)[Flip](https://exif.tools/flip-image)[Rotate](https://exif.tools/rotate-image)**
+
+## PDF tools
+
+Flatten, repair, and extract content.
+
+**[PDF Viewer](https://exif.tools/pdf-viewer)[Word Viewer](https://exif.tools/word-viewer)[Flatten](https://exif.tools/flatten-pdf)[Unlock](https://exif.tools/unlock-pdf)[Lock](https://exif.tools/lock-pdf)[Repair](https://exif.tools/repair-pdf)[Extract Assets](https://exif.tools/extract-pdf)[Extract Links](https://exif.tools/extract-pdf-links)[PDF.CAB ↗](https://pdf.cab/pdf-tools)**
+
+## Data tools
+
+Repair gene symbols and protect identifiers.
+
+**[Gene Excel Updater](https://exif.tools/excel-escape-gene)[Escape Excel](https://exif.tools/escape-excel)[Gene Updater](https://exif.tools/excel-gene-updater)**
+
+exif.tools · Local file processing[Data methodology](https://exif.tools/excel-escape-gene/methodology)[Data privacy](https://exif.tools/excel-escape-gene/privacy)[Site information (JSON)](https://exif.tools/index.json)[Barcode Scanner ↗](https://barcode.report/tools/scanner)
+
+**Install exif.tools**
+
+
+
+Open it from your Home Screen or app launcher, with offline access after the first load.
+
+**InstallNot now**\
+Other Tools\
+Remove AI label metadata\
+from images.\
+Delete AI Footprints\
+\
+Strip the C2PA JUMBF, XMP and other metadata AI signals that Instagram, Facebook, LinkedIn and other platforms check.\
+\
+Advertisement\
+\
+New. Remove AI labels and metadata from your Videos.\
+Clean video\
+Drag & Drop or Click to Upload\
+Up to 5 images. Max. Upload Size: 100 MB\
+\
+Choose Image\
+JPEG, PNG, WebP, TIFF, HEIC Only\
+\
+Remove All Metadata\
+File uploaded\
+\
+Cancel all\
+1.85 MB of 1.85 MB\
+\
+File Preview\
+Crowned Neon Letter P Romance.png\
+1.85 MB·PNG·Uploaded\
+\
+View Metadata\
+\
+Cancel\
+File Name:\
+Crowned Neon Letter P Romance.png\
+AI Status\
+AI Footprints Found\
+Based on File Hidden Metadata. This is not a Pixel level scan.\
+AI Model Used\
+ChatGPT\
+Total fields\
+60\
+in 3 sections\
+AI Footprint\
+3\
+3 fields show AI\
+Not present in this file: XMP · IPTC · EXIF · Location · AI prompt & settings\
+By section · select to expand\
+\
+C2PA\
+7\
+\
+File\
+6\
+\
+Other\
+47\
+Sections\
+Expand all\
+Collapse all\
+\
+Content Authenticity (C2PA)\
+A signed record of how the image was made\
+7 fields · 1 AI\
+Claim Generator Info Name\
+OpenAI Media Service API\
+Actions Software Agent Name\
+ChatGPT\
+JUMD Label\
+c2pa\
+C2PA Status\
+present\
+Content Authenticity\
+Unverified\
+AI Generation Claims\
+trainedAlgorithmicMedia\
+AI Footprint\
+Tool Verification\
+ChatGPT\
+\
+File Information\
+File type, size and dimensions\
+6 fields\
+Size\
+1.85 MB\
+Modified\
+1795329456\
+Mime\
+image/png\
+Width\
+941\
+Height\
+1672\
+Type\
+3\
+\
+Other metadata\
+Other hidden details\
+47 fields · 2 AI\
+Image Size\
+941 1672\
+Megapixels\
+1.573352\
+File: File Type Extension\
+PNG\
+P N G: Image Width\
+941\
+P N G: Image Height\
+1672\
+P N G: Bit Depth\
+8\
+P N G: Color Type\
+2\
+P N G: Compression\
+0\
+P N G: Filter\
+0\
+P N G: Interlace\
+0\
+J U M B F: J U M D Type\
+6332706100110010800000aa00389b71\
+J U M B F: J U M D Label\
+c2pa\
+Jpeg2000: C2 P A Icon Salt\
+f9a77056efb96546fb15aadb62526b52\
+Jpeg2000: C2 P A Icon Type\
+image/svg+xml\
+Jpeg2000: C2 P A Icon Data\
+(Binary data 2415 bytes, use -b option to extract)\
+Jpeg2000: C2 P A Actions V2 Salt\
+9956201816456e0ade2e548a7999d331\
+Jpeg2000: C2 P A Hash Data Salt\
+37ce3edbcd910367d56470485fdb4f4e\
+C B O R: Actions Action\
+c2pa.created, c2pa.converted, c2pa.watermarked.unbound\
+C B O R: Actions When\
+2026:11:21 07:47:37.397104383Z, 2026:11:21 07:47:37.397108298Z, 2026:11:21 07:47:37.394968311Z\
+C B O R: Actions Software Agent Name\
+ChatGPT\
+C B O R: Actions Software Agent Version\
+gpt-image\
+C B O R: Actions Digital Source Type\
+http\://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia\
+C B O R: All Actions Included\
+false\
+C B O R: Exclusions Start\
+33\
+C B O R: Exclusions Length\
+21893\
+C B O R: Name\
+jumbf manifest\
+C B O R: Alg\
+sha256\
+C B O R: Hash\
+(Binary data 32 bytes, use -b option to extract)\
+C B O R: Pad\
+(Binary data 8 bytes, use -b option to extract)\
+C B O R: Instance I D\
+xmp:iid:15c5b6a0-f30a-481c-9231-8924f4803c8c\
+C B O R: Claim Generator Info Name\
+OpenAI Media Service API\
+C B O R: Claim Generator Info Icon Url\
+self#jumbf=c2pa.assertions/c2pa.icon\
+C B O R: Claim Generator Info Icon Hash\
+(Binary data 32 bytes, use -b option to extract)\
+C B O R: Claim Generator Info Spec Version\
+2.2.0\
+C B O R: Claim Generator Info Org Contentauth C2 Pa Rs\
+0.79.2\
+C B O R: Signature\
+self#jumbf=/c2pa/urn:c2pa:ec08466b-65be-47f1-bbdd-bb03839998a8/c2pa.signature\
+C B O R: Created Assertions Url\
+self#jumbf=c2pa.assertions/c2pa.icon, self#jumbf=c2pa.assertions/c2pa.actions.v2, self#jumbf=c2pa.assertions/c2pa.hash.data\
+C B O R: Created Assertions Hash\
+(Binary data 32 bytes, use -b option to extract), (Binary data 32 bytes, use -b option to extract), (Binary data 32 bytes, use -b option to extract)\
+C B O R: Title\
+image.png\
+C B O R: Item0\
+(Binary data 1877 bytes, use -b option to extract)\
+C B O R: Item1 Sig Tst2 Tst Tokens Val\
+(Binary data 5259 bytes, use -b option to extract)\
+C B O R: Item1 R Vals Ocsp Vals\
+(Binary data 1049 bytes, use -b option to extract)\
+C B O R: Item1 Pad\
+(Binary data 9501 bytes, use -b option to extract)\
+C B O R: Item2\
+null\
+C B O R: Item3\
+(Binary data 64 bytes, use -b option to extract)\
+ActionsSoftwareAgent\
+ChatGPT\
+AI Footprint\
+Claim_generator\
+OpenAI Media Service API\
+AI Footprint\
+Steps to remove metadata\
+\
+Upload your image\
+AI Tags Found:\
+Midjourney | ChatGPT | etc.\
+C2PAXMPEXIFIPTC\
+Strip Metadata\
+Download Image\
+Pause animation\
+1\
+Upload your image\
+2\
+View Metadata Footprints\
+3\
+Delete AI & All Other Metadata\
+4\
+Download clean image\
+Features\
+Remove C2PA credentials\
+We strip C2PA and JUMBF credentials added by cameras, Adobe Photoshop, and generative tools. These records are one of the primary signals Instagram checks.\
+\
+Delete Full EXIF, IPTC & XMP Info\
+We delete all EXIF, IPTC and XMP data from your image. GPS coordinates, camera serial numbers, timestamps and device details go out together with the AI markers, so your private details are not exposed on Instagram.\
+\
+Clean without changing pixels\
+We strip metadata directly from file headers. We never recompress, resize, or alter image pixels, so your photo looks exactly the same.\
+\
+Help prevent false AI labels\
+Real photos edited in Lightroom or Photoshop can pick up AI flags from simple retouching. Removing those tags helps prevent Instagram from adding an automated AI label.\
+\
+Clean up to 5 photos at once\
+Drop up to 5 images together, 100 MB in total, and clean them in one click.\
+\
+Inspect every tag before cleaning\
+Review every EXIF, IPTC, and XMP tag found in your file before you clean it, then confirm the records are gone after cleaning.\
+\
+Works with common image formats\
+Clean JPEG, PNG, WebP, TIFF, and HEIC images before uploading them to your Instagram feed, story, or carousel.\
+\
+Files deleted after 30 minutes\
+Uploaded images are processed in temporary memory and permanently deleted within 30 minutes. We never store your files or use them for training.\
+\
+Free with no account required\
+Upload your image and download the cleaned version immediately. There are no signups, no subscriptions, and no added watermarks.\
+\
+Remove AI Metadata and AI Detection from Image\
+Remove AI label and AI metadata detection from images for free. Upload a photo to instantly delete C2PA/JUMBF, EXIF, IPTC and XMP tags.\
+\
+DeleteFootprints.AI is a free WebApp that strips all AI and all other metadata footprints from images. Our tool is free to use and there are no limits on how many images you can clean.\
+\
+One of the best features of this tool is that after uploading an image, you can view the embedded AI info and other tags instantly. If there are any AI footprints in the metadata we will show that first, so that you know what AI tags are present in the image. So, this tool is great to check whether an image contains any AI metatags or not.\
+\
+Learn more about image metadata and AI footprints\
+What is an AI image metadata footprint?\
+▼\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Why AI image metadata matters\
+▼\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+How to identify AI metadata in images\
+▼\
+\
+\
+\
+\
+\
+\
+\
+How to delete AI metadata footprints\
+▼\
+\
+\
+\
+\
+FAQs\
+Will this remove all metadata, including AI-specific tags?\
+▼\
+\
+Can you remove invisible or visual AI watermarks?\
+▼\
+\
+Do you store my images? How long are files kept?\
+▼\
+\
+What formats and limits are supported?\
+▼\
+\
+Will removing the metadata remove the AI label on Instagram?\
+▼\
+\
+Does cleaning change the picture or its quality?\
+▼\
+\
+Does it work on images from ChatGPT, DALL·E, Firefly or Gemini?\
+▼\
+Yes. AI image generation tools write a signed C2PA record into the file. DeleteFootprints.AI removes it, together with the XMP and IPTC fields that mark the image as AI generated. The tests behind the site check this on a real OpenAI-signed PNG and a real Adobe-signed JPEG.\
+\
+Can I clean HEIC photos from an iPhone?\
+▼\
+\
+Why did Instagram put an AI label on my real photo?\
+▼\
+\
+Does the tool scan my caption or prompt text for AI words?\
+▼\
+\
+Language:\
+\
+🇺🇸 English\
+DeleteFootprints.ai\
+About\
+DeleteFootprints.ai is a free AI metadata remover and cleaner for images and text. You can also View metadata, Geo Tag Photos and edit image metadata Online.\
+\
+For any queries or to share feedback, Email us at info@deletefootprints.ai\
+\
+Tools\
+Remove AI Detection from Image\
+Remove Video Metadata & AI Labels\
+Delete AI Text Watermarks\
+Edit Image Metadata\
+View Metadata\
+Geo Tag Photo Online\
+Remove AI Content from Instagram Post\
+Follow Us\
+Facebook\
+Instagram\
+Follow on X\
+Quick Links\
+About and contact\
+Terms of Service\
+Privacy Policy\
+Cookie Policy\
+Cookie settings\
+Disclaimer\
+Sitemap\
+Last updated October 17, 2026.\
+\
+© 2025–2026 DeleteFootprints.ai. All rights reserved.\
+\
+Founded and Developed By Srinu Ipathy.  v2.6.0 (2026-11-16)

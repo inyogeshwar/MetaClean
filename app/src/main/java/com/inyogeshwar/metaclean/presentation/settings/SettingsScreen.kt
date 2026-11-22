@@ -14,12 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.inyogeshwar.metaclean.core.ui.components.*
 import com.inyogeshwar.metaclean.core.ui.theme.*
 import com.inyogeshwar.metaclean.domain.repository.AppThemeMode
 import com.inyogeshwar.metaclean.domain.repository.ExportFormat
@@ -39,36 +41,40 @@ fun SettingsScreen(
     if (showNamingDialog) {
         AlertDialog(
             onDismissRequest = { showNamingDialog = false },
-            title = { Text("Output Filename Suffix") },
+            title = { Text("Output Filename Suffix", color = iOSTextPrimary) },
             text = {
                 OutlinedTextField(
                     value = tempSuffix,
                     onValueChange = { tempSuffix = it },
-                    label = { Text("Suffix (e.g. _clean, _scrubbed)") },
+                    label = { Text("Suffix (e.g. _clean)") },
                     singleLine = true
                 )
             },
             confirmButton = {
-                Button(onClick = {
-                    viewModel.setNamingSuffix(tempSuffix)
-                    showNamingDialog = false
-                }) {
+                Button(
+                    onClick = {
+                        viewModel.setNamingSuffix(tempSuffix)
+                        showNamingDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
+                ) {
                     Text("Save")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showNamingDialog = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = iOSSystemBlue)
                 }
-            }
+            },
+            containerColor = iOSCardDark
         )
     }
 
     if (showClearHistoryConfirm) {
         AlertDialog(
             onDismissRequest = { showClearHistoryConfirm = false },
-            title = { Text("Clear All History?") },
-            text = { Text("This will delete all saved processing session statistics from your device.") },
+            title = { Text("Clear All History?", color = iOSTextPrimary) },
+            text = { Text("This will permanently remove the log of past processing sessions from this device.", color = iOSTextSecondary) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -76,309 +82,187 @@ fun SettingsScreen(
                         showClearHistoryConfirm = false
                         Toast.makeText(context, "History cleared", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = DangerRed)
+                    colors = ButtonDefaults.buttonColors(containerColor = iOSSystemRed)
                 ) {
-                    Text("Clear")
+                    Text("Delete")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearHistoryConfirm = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = iOSSystemBlue)
                 }
-            }
+            },
+            containerColor = iOSCardDark
         )
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(iOSBackgroundDark)
     ) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Settings & Privacy",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+        // iOS Navigation Header
+        Text(
+            text = "Settings",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = (-0.5).sp,
+            color = iOSTextPrimary,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Theme Section
-            SettingsGroup(title = "Appearance & Interface") {
-                SettingRow(
+            // Appearance
+            IOSSectionHeader(title = "Appearance")
+            IOSGroupedCard {
+                var expanded by remember { mutableStateOf(false) }
+                IOSListRow(
                     title = "App Theme",
-                    subtitle = when (settings.themeMode) {
-                        AppThemeMode.DARK -> "Dark (Default privacy darkroom aesthetic)"
-                        AppThemeMode.LIGHT -> "Light"
-                        AppThemeMode.SYSTEM -> "Follow Android System"
-                    },
-                    icon = Icons.Default.DarkMode
+                    value = settings.themeMode.name,
+                    icon = Icons.Default.DarkMode,
+                    iconTint = iOSSystemIndigo,
+                    showChevron = true,
+                    onClick = { expanded = true }
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
                 ) {
-                    var expanded by remember { mutableStateOf(false) }
-                    Box {
-                        TextButton(onClick = { expanded = true }) {
-                            Text(settings.themeMode.name, color = AccentPrimary)
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Dark (Recommended)") },
-                                onClick = {
-                                    viewModel.setTheme(AppThemeMode.DARK)
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Light") },
-                                onClick = {
-                                    viewModel.setTheme(AppThemeMode.LIGHT)
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Follow System") },
-                                onClick = {
-                                    viewModel.setTheme(AppThemeMode.SYSTEM)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
+                    DropdownMenuItem(text = { Text("Dark (OLED)") }, onClick = { viewModel.setTheme(AppThemeMode.DARK); expanded = false })
+                    DropdownMenuItem(text = { Text("Light") }, onClick = { viewModel.setTheme(AppThemeMode.LIGHT); expanded = false })
+                    DropdownMenuItem(text = { Text("Follow System") }, onClick = { viewModel.setTheme(AppThemeMode.SYSTEM); expanded = false })
                 }
             }
 
-            // Export Defaults
-            SettingsGroup(title = "Export & File Naming") {
-                SettingRow(
-                    title = "Default Output Format",
-                    subtitle = when (settings.exportFormat) {
-                        ExportFormat.ORIGINAL -> "Preserve original file format"
-                        ExportFormat.JPEG -> "Convert to high-quality JPEG"
-                        ExportFormat.PNG -> "Convert to lossless PNG"
-                        ExportFormat.WEBP -> "Convert to WebP"
-                    },
-                    icon = Icons.Default.Image
+            // Export Options
+            IOSSectionHeader(title = "Export & Output Files")
+            IOSGroupedCard {
+                var formatExpanded by remember { mutableStateOf(false) }
+                IOSListRow(
+                    title = "Output Format",
+                    value = settings.exportFormat.name,
+                    icon = Icons.Default.Image,
+                    iconTint = iOSSystemBlue,
+                    showChevron = true,
+                    onClick = { formatExpanded = true }
+                )
+                DropdownMenu(
+                    expanded = formatExpanded,
+                    onDismissRequest = { formatExpanded = false }
                 ) {
-                    var expanded by remember { mutableStateOf(false) }
-                    Box {
-                        TextButton(onClick = { expanded = true }) {
-                            Text(settings.exportFormat.name, color = AccentPrimary)
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            ExportFormat.values().forEach { fmt ->
-                                DropdownMenuItem(
-                                    text = { Text(fmt.name) },
-                                    onClick = {
-                                        viewModel.setExportFormat(fmt)
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
+                    ExportFormat.values().forEach { fmt ->
+                        DropdownMenuItem(
+                            text = { Text(fmt.name) },
+                            onClick = { viewModel.setExportFormat(fmt); formatExpanded = false }
+                        )
                     }
                 }
 
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
+                IOSDivider()
 
-                SettingRow(
-                    title = "Output Filename Suffix",
-                    subtitle = "Appended to cleaned copies: \"${settings.outputNamingSuffix}\"",
-                    icon = Icons.Default.Edit
-                ) {
-                    TextButton(onClick = {
+                IOSListRow(
+                    title = "File Name Suffix",
+                    value = settings.outputNamingSuffix,
+                    icon = Icons.Default.Edit,
+                    iconTint = iOSSystemTeal,
+                    showChevron = true,
+                    onClick = {
                         tempSuffix = settings.outputNamingSuffix
                         showNamingDialog = true
-                    }) {
-                        Text("Edit", color = AccentPrimary)
                     }
-                }
-            }
-
-            // Workflow Preferences
-            SettingsGroup(title = "Workflow & Storage") {
-                SettingSwitchRow(
-                    title = "Confirm Before Batch Processing",
-                    subtitle = "Show options dialog before executing batch clean",
-                    checked = settings.confirmBeforeProcessing,
-                    onCheckedChange = { viewModel.setConfirmBeforeProcessing(it) }
                 )
-
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
-
-                SettingSwitchRow(
-                    title = "Auto-clear Cache on Queue Clear",
-                    subtitle = "Delete temporary processed working files automatically",
-                    checked = settings.autoClearTempFiles,
-                    onCheckedChange = { viewModel.setAutoClearTemp(it) }
-                )
-
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
-
-                SettingRow(
-                    title = "Purge Working Cache Now",
-                    subtitle = "Free temporary storage used during processing",
-                    icon = Icons.Default.CleaningServices
-                ) {
-                    TextButton(onClick = {
-                        viewModel.clearTempFilesNow(context)
-                        Toast.makeText(context, "Temporary files deleted", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Text("Clear", color = WarningAmber)
-                    }
-                }
-
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
-
-                SettingRow(
-                    title = "Clear Processing History",
-                    subtitle = "Delete all Room database session records",
-                    icon = Icons.Default.DeleteForever
-                ) {
-                    TextButton(onClick = { showClearHistoryConfirm = true }) {
-                        Text("Delete", color = DangerRed)
-                    }
-                }
             }
 
-            // Honest Technical Limitations
-            SettingsGroup(title = "Processing Integrity & Limitations") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Verified, contentDescription = null, tint = AccentPrimary, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Honest Privacy Disclosures", style = MaterialTheme.typography.titleSmall)
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    DisclosureItem("EXIF & GPS: 100% removed from JPEG and WebP copies.")
-                    DisclosureItem("PNG: Lossless chunk filtering strips textual comments (tEXt/zTXt/iTXt) and eXIf chunks while leaving raw image data untouched.")
-                    DisclosureItem("AI Provenance & C2PA: Treated strictly as read-only / informational. MetaClean does not bypass or evade AI provenance labels.")
-                    DisclosureItem("Copy Safety: The original file is NEVER modified or overwritten.")
-                }
-            }
-
-            // About MetaClean
-            SettingsGroup(title = "About MetaClean") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text("MetaClean v1.0.0", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Native Android Image Metadata Privacy Toolkit", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        "Built with Kotlin, Jetpack Compose, Material 3, and Clean Architecture. Completely offline, zero telemetry, zero permissions required.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            // Workflow & Storage
+            IOSSectionHeader(title = "Storage & Automation")
+            IOSGroupedCard {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Confirm Before Scrubbing", fontSize = 15.sp, color = iOSTextPrimary)
+                    Switch(
+                        checked = settings.confirmBeforeProcessing,
+                        onCheckedChange = { viewModel.setConfirmBeforeProcessing(it) },
+                        colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = iOSSystemGreen)
                     )
                 }
+
+                IOSDivider()
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Auto-purge Working Cache", fontSize = 15.sp, color = iOSTextPrimary)
+                    Switch(
+                        checked = settings.autoClearTempFiles,
+                        onCheckedChange = { viewModel.setAutoClearTemp(it) },
+                        colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = iOSSystemGreen)
+                    )
+                }
+
+                IOSDivider()
+
+                IOSListRow(
+                    title = "Clear Cache Now",
+                    value = "Free Space",
+                    icon = Icons.Default.CleaningServices,
+                    iconTint = iOSSystemOrange,
+                    onClick = {
+                        viewModel.clearTempFilesNow(context)
+                        Toast.makeText(context, "Working cache cleared", Toast.LENGTH_SHORT).show()
+                    }
+                )
+
+                IOSDivider()
+
+                IOSListRow(
+                    title = "Delete History Records",
+                    value = "Purge",
+                    icon = Icons.Default.DeleteForever,
+                    iconTint = iOSSystemRed,
+                    onClick = { showClearHistoryConfirm = true }
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-private fun SettingsGroup(
-    title: String,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Column {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            color = AccentPrimary,
-            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-        )
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp)),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-        ) {
-            Column(content = content)
-        }
-    }
-}
-
-@Composable
-private fun SettingRow(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    action: @Composable () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(text = title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+            // AI Footprint & Disclosures
+            IOSSectionHeader(title = "Honest Disclosures")
+            IOSGroupedCard {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("• EXIF & Location: 100% removed from JPEG and WebP.", fontSize = 12.sp, color = iOSTextSecondary)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("• PNG: Lossless filtering strips textual and EXIF chunks without re-encoding pixels.", fontSize = 12.sp, color = iOSTextSecondary)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("• AI Provenance & C2PA: Informational & read-only detection.", fontSize = 12.sp, color = iOSTextSecondary)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("• Safety: Original files are never modified.", fontSize = 12.sp, color = iOSTextSecondary)
+                }
             }
-        }
-        action()
-    }
-}
 
-@Composable
-private fun SettingSwitchRow(
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
-        }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
-    }
-}
+            // About
+            IOSSectionHeader(title = "About")
+            IOSGroupedCard {
+                IOSListRow(title = "App Version", value = "1.0.0 (Native)", icon = Icons.Default.Info, iconTint = iOSSystemBlue)
+                IOSDivider()
+                IOSListRow(title = "Engine", value = "Kotlin • Jetpack Compose", icon = Icons.Default.Code, iconTint = iOSSystemIndigo)
+                IOSDivider()
+                IOSListRow(title = "Offline Security", value = "100% On-Device", icon = Icons.Default.Shield, iconTint = iOSSystemGreen)
+            }
 
-@Composable
-private fun DisclosureItem(text: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Text("• ", color = AccentSecondary, fontWeight = FontWeight.Bold)
-        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(30.dp))
+        }
     }
 }

@@ -9,10 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.inyogeshwar.metaclean.core.ui.theme.AccentPrimary
+import androidx.compose.ui.unit.sp
+import com.inyogeshwar.metaclean.core.ui.theme.*
 
 @Composable
 fun EmptyStateView(
@@ -32,44 +35,48 @@ fun EmptyStateView(
     ) {
         Box(
             modifier = Modifier
-                .size(72.dp)
+                .size(68.dp)
                 .clip(CircleShape)
-                .background(AccentPrimary.copy(alpha = 0.12f)),
+                .background(iOSCardElevated),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = AccentPrimary,
-                modifier = Modifier.size(36.dp)
+                tint = iOSSystemBlue,
+                modifier = Modifier.size(32.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 19.sp,
+            fontWeight = FontWeight.Bold,
+            color = iOSTextPrimary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = description,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
+            fontSize = 13.sp,
+            color = iOSTextSecondary,
+            textAlign = TextAlign.Center,
+            lineHeight = 18.sp
         )
 
         if (buttonText != null && onButtonClick != null) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Button(
                 onClick = onButtonClick,
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue),
+                modifier = Modifier.height(44.dp)
             ) {
-                Text(text = buttonText)
+                Text(text = buttonText, fontWeight = FontWeight.SemiBold, color = Color.White)
             }
         }
     }

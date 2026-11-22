@@ -90,6 +90,33 @@ object FileUtils {
         }
     }
 
+    fun InputStream.readFully(buffer: ByteArray, offset: Int = 0, length: Int = buffer.size): Boolean {
+        var totalRead = 0
+        while (totalRead < length) {
+            val count = this.read(buffer, offset + totalRead, length - totalRead)
+            if (count == -1) return false
+            totalRead += count
+        }
+        return true
+    }
+
+    fun InputStream.skipFully(bytesToSkip: Long): Long {
+        var remaining = bytesToSkip
+        val tempBuf = ByteArray(8192)
+        while (remaining > 0) {
+            val skipped = this.skip(remaining)
+            if (skipped <= 0) {
+                val toRead = minOf(remaining, tempBuf.size.toLong()).toInt()
+                val read = this.read(tempBuf, 0, toRead)
+                if (read == -1) break
+                remaining -= read
+            } else {
+                remaining -= skipped
+            }
+        }
+        return bytesToSkip - remaining
+    }
+
     fun copyStream(input: InputStream, output: OutputStream, bufferSize: Int = 16384): Long {
         val buffer = ByteArray(bufferSize)
         var totalBytes: Long = 0

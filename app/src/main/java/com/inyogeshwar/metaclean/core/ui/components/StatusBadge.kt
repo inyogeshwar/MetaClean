@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.inyogeshwar.metaclean.core.ui.theme.*
@@ -20,25 +20,26 @@ fun StatusBadge(
     modifier: Modifier = Modifier
 ) {
     val (bgColor, textColor, text) = when (status) {
-        ProcessingStatus.PENDING -> Triple(SurfaceContainerDark, TextSecondaryDark, "Pending")
-        ProcessingStatus.INSPECTING -> Triple(AccentPrimary.copy(alpha = 0.2f), AccentPrimary, "Inspecting")
-        ProcessingStatus.PROCESSING -> Triple(AccentSecondary.copy(alpha = 0.2f), AccentSecondary, "Processing")
-        ProcessingStatus.VERIFYING -> Triple(AccentTertiary.copy(alpha = 0.2f), AccentTertiary, "Verifying")
-        ProcessingStatus.COMPLETED -> Triple(SuccessGreen.copy(alpha = 0.2f), SuccessGreen, "Cleaned")
-        ProcessingStatus.FAILED -> Triple(DangerRed.copy(alpha = 0.2f), DangerRed, "Failed")
-        ProcessingStatus.CANCELLED -> Triple(WarningAmber.copy(alpha = 0.2f), WarningAmber, "Cancelled")
+        ProcessingStatus.PENDING -> Triple(iOSCardElevated, iOSTextSecondary, "Pending")
+        ProcessingStatus.INSPECTING -> Triple(iOSSystemBlue.copy(alpha = 0.2f), iOSSystemBlue, "Inspecting")
+        ProcessingStatus.PROCESSING -> Triple(iOSSystemTeal.copy(alpha = 0.2f), iOSSystemTeal, "Scrubbing")
+        ProcessingStatus.VERIFYING -> Triple(iOSSystemIndigo.copy(alpha = 0.2f), iOSSystemIndigo, "Verifying")
+        ProcessingStatus.COMPLETED -> Triple(iOSSystemGreen.copy(alpha = 0.2f), iOSSystemGreen, "Cleaned")
+        ProcessingStatus.FAILED -> Triple(iOSSystemRed.copy(alpha = 0.2f), iOSSystemRed, "Failed")
+        ProcessingStatus.CANCELLED -> Triple(iOSSystemOrange.copy(alpha = 0.2f), iOSSystemOrange, "Cancelled")
     }
 
     Box(
         modifier = modifier
-            .background(bgColor, RoundedCornerShape(6.dp))
-            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(bgColor)
+            .padding(horizontal = 7.dp, vertical = 2.5.dp)
     ) {
         Text(
             text = text,
             color = textColor,
-            fontSize = 11.sp,
-            style = MaterialTheme.typography.labelSmall
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }

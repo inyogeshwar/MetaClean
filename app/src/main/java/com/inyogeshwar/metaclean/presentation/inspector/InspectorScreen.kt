@@ -6,23 +6,27 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,20 +72,20 @@ fun InspectorScreen(
         val jsonText = viewModel.generateMetadataJson(metadata)
         AlertDialog(
             onDismissRequest = { showJsonDialog = false },
-            title = { Text("Raw Metadata JSON Export") },
+            title = { Text("Metadata JSON Export", color = iOSTextPrimary) },
             text = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
-                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
-                        .padding(8.dp)
+                        .background(iOSCardElevated, RoundedCornerShape(12.dp))
+                        .padding(10.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = jsonText,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        color = iOSTextSecondary,
+                        fontFamily = FontFamily.Monospace,
                         fontSize = 11.sp
                     )
                 }
@@ -91,9 +95,10 @@ fun InspectorScreen(
                     onClick = {
                         clipboard.setText(AnnotatedString(jsonText))
                         showJsonDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
                 ) {
-                    Text("Copy JSON")
+                    Text("Copy")
                 }
             },
             dismissButton = {
@@ -103,46 +108,64 @@ fun InspectorScreen(
                         putExtra(Intent.EXTRA_TEXT, jsonText)
                         type = "application/json"
                     }
-                    context.startActivity(Intent.createChooser(sendIntent, "Share Metadata JSON"))
+                    context.startActivity(Intent.createChooser(sendIntent, "Share JSON"))
                 }) {
-                    Text("Share")
+                    Text("Share", color = iOSSystemBlue)
                 }
-            }
+            },
+            containerColor = iOSCardDark
         )
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(iOSBackgroundDark)
     ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Metadata Inspector",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            actions = {
-                IconButton(onClick = {
-                    pickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }) {
-                    Icon(Icons.Default.AddPhotoAlternate, contentDescription = "Open Image")
-                }
+        // iOS Navigation Header
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Inspector",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.5).sp,
+                color = iOSTextPrimary
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (metadata != null) {
-                    IconButton(onClick = { showJsonDialog = true }) {
-                        Icon(Icons.Default.DataObject, contentDescription = "Export JSON")
+                    IconButton(
+                        onClick = { showJsonDialog = true },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(iOSCardElevated)
+                    ) {
+                        Icon(Icons.Default.DataObject, contentDescription = "JSON", tint = iOSTextPrimary, modifier = Modifier.size(18.dp))
                     }
                 }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
-        )
 
-        // Queue Horizontal Selector if multiple images exist
+                IconButton(
+                    onClick = {
+                        pickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(iOSSystemBlue)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Open", tint = Color.White, modifier = Modifier.size(20.dp))
+                }
+            }
+        }
+
+        // Horizontal Image Carousel Selector
         if (mediaQueue.size > 1) {
             Row(
                 modifier = Modifier
@@ -153,30 +176,31 @@ fun InspectorScreen(
             ) {
                 mediaQueue.forEach { item ->
                     val isSelected = item.id == selectedItem?.id
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { viewModel.selectItem(item.id) },
-                        label = {
-                            Text(
-                                text = item.fileName.take(18) + if (item.fileName.length > 18) "..." else "",
-                                fontSize = 12.sp
-                            )
-                        },
-                        leadingIcon = {
-                            StatusBadge(status = item.status)
-                        }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(if (isSelected) iOSSystemBlue else iOSCardDark)
+                            .clickable { viewModel.selectItem(item.id) }
+                            .padding(horizontal = 12.dp, vertical = 7.dp)
+                    ) {
+                        Text(
+                            text = item.fileName.take(16) + if (item.fileName.length > 16) "..." else "",
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                            color = if (isSelected) Color.White else iOSTextSecondary
+                        )
+                    }
                 }
             }
-            Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), thickness = 1.dp)
+            Spacer(modifier = Modifier.height(4.dp))
         }
 
         if (selectedItem == null || metadata == null) {
             EmptyStateView(
                 icon = Icons.Default.Search,
-                title = "No Image Selected",
-                description = "Choose an image to inspect its EXIF, GPS location, camera specifications, IPTC, XMP and file signatures.",
-                buttonText = "Select Image",
+                title = "No Photo Inspected",
+                description = "Choose an image to inspect EXIF tags, GPS coordinates, camera hardware, and C2PA / JUMBF AI footprints.",
+                buttonText = "Select Photo",
                 onButtonClick = {
                     pickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
@@ -188,19 +212,15 @@ fun InspectorScreen(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Image Preview & Quick Summary Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
+                // Image Hero Preview Card
+                IOSGroupedCard {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(
@@ -208,8 +228,8 @@ fun InspectorScreen(
                             contentDescription = item.fileName,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(76.dp)
-                                .clip(RoundedCornerShape(10.dp))
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(12.dp))
                         )
 
                         Spacer(modifier = Modifier.width(14.dp))
@@ -217,20 +237,21 @@ fun InspectorScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = item.fileName,
-                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
+                                color = iOSTextPrimary,
                                 maxLines = 1
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(3.dp))
                             Text(
                                 text = "${metadata.fileInfo.width} × ${metadata.fileInfo.height} px • ${metadata.fileInfo.megapixels} MP",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                fontSize = 13.sp,
+                                color = iOSTextSecondary
                             )
                             Text(
                                 text = "${item.formattedSize} • ${metadata.fileInfo.formatDescription}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = AccentSecondary
+                                fontSize = 12.sp,
+                                color = iOSSystemTeal
                             )
                         }
 
@@ -238,281 +259,250 @@ fun InspectorScreen(
                     }
                 }
 
-                // Privacy Warning Banner if GPS or Personal fields are found
-                if (metadata.exifData.gpsCoordinateString != null || metadata.exifData.artist != null) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = DangerRed.copy(alpha = 0.12f))
-                    ) {
+                // AI Footprint & C2PA Status (Inspired by DeleteFootprints.ai from z paste.txt)
+                val prov = metadata.provenanceData
+                val hasAi = prov.hasProvenance || prov.aiSignals.isNotEmpty()
+                IOSGroupedCard {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(
-                            modifier = Modifier.padding(14.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Warning, contentDescription = null, tint = DangerRed)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (hasAi) iOSSystemOrange.copy(alpha = 0.2f) else iOSSystemGreen.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = if (hasAi) Icons.Default.Warning else Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        tint = if (hasAi) iOSSystemOrange else iOSSystemGreen,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Privacy Sensitive Metadata Found",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = DangerRed
-                                )
-                                Text(
-                                    text = "This file contains embedded personal location or identity tags that could expose your privacy.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    text = if (hasAi) "AI Footprints Found" else "No AI Signals Detected",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (hasAi) iOSSystemOrange else iOSSystemGreen
                                 )
                             }
+
+                            IOSBadge(
+                                text = if (hasAi) "DETECTED" else "CLEAN",
+                                color = if (hasAi) iOSSystemOrange else iOSSystemGreen
+                            )
                         }
-                    }
-                }
-
-                // 1. File Information Section
-                MetadataSectionCard(
-                    title = "File Information",
-                    icon = Icons.Default.Info,
-                    itemCount = 7,
-                    initiallyExpanded = true,
-                    badgeText = metadata.fileInfo.formatDescription
-                ) {
-                    MetadataItemRow("File Name", metadata.fileInfo.fileName)
-                    MetadataItemRow("File Size", metadata.fileInfo.formattedFileSize)
-                    MetadataItemRow("MIME Type", metadata.fileInfo.mimeType)
-                    MetadataItemRow("Dimensions", "${metadata.fileInfo.width} × ${metadata.fileInfo.height} px")
-                    MetadataItemRow("Resolution", "${metadata.fileInfo.megapixels} Megapixels")
-                    MetadataItemRow("Image Orientation", metadata.fileInfo.orientation)
-                    MetadataItemRow("Container Format", metadata.fileInfo.formatDescription)
-                }
-
-                // 2. GPS Location
-                MetadataSectionCard(
-                    title = "GPS & Location",
-                    icon = Icons.Default.LocationOn,
-                    itemCount = if (metadata.exifData.gpsCoordinateString != null) 3 else 0,
-                    initiallyExpanded = metadata.exifData.gpsCoordinateString != null,
-                    badgeText = if (metadata.exifData.gpsCoordinateString != null) "FOUND" else "CLEAN",
-                    badgeColor = if (metadata.exifData.gpsCoordinateString != null) DangerRed else SuccessGreen
-                ) {
-                    if (metadata.exifData.gpsCoordinateString != null) {
-                        MetadataItemRow("Coordinates", metadata.exifData.gpsCoordinateString, isSensitive = true, highlight = true)
-                        MetadataItemRow("Latitude", metadata.exifData.gpsLatitude?.toString(), isSensitive = true)
-                        MetadataItemRow("Longitude", metadata.exifData.gpsLongitude?.toString(), isSensitive = true)
-                        metadata.exifData.gpsAltitude?.let {
-                            MetadataItemRow("Altitude", "%.1f meters".format(it), isSensitive = true)
-                        }
-                    } else {
-                        Text(
-                            text = "No GPS coordinates or geographical location tags found in this file.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                // 3. Camera & EXIF
-                MetadataSectionCard(
-                    title = "Camera & EXIF Hardware",
-                    icon = Icons.Default.PhotoCamera,
-                    itemCount = metadata.exifData.allTags.size,
-                    initiallyExpanded = false,
-                    badgeText = if (metadata.exifData.hasExif) "EXIF 2.3+" else "NONE"
-                ) {
-                    MetadataItemRow("Camera Make", metadata.exifData.cameraMake, isSensitive = true)
-                    MetadataItemRow("Camera Model", metadata.exifData.cameraModel, isSensitive = true)
-                    MetadataItemRow("Lens Model", metadata.exifData.lensModel)
-                    MetadataItemRow("Software / Tool", metadata.exifData.software, isSensitive = true)
-                    MetadataItemRow("Original Date/Time", metadata.exifData.dateTimeOriginal, isSensitive = true)
-                    MetadataItemRow("Digitized Date/Time", metadata.exifData.dateTimeDigitized, isSensitive = true)
-                    MetadataItemRow("ISO Sensitivity", metadata.exifData.iso)
-                    MetadataItemRow("Aperture", metadata.exifData.fNumber)
-                    MetadataItemRow("Shutter Speed", metadata.exifData.exposureTime)
-                    MetadataItemRow("Focal Length", metadata.exifData.focalLength)
-                    MetadataItemRow("35mm Equivalent", metadata.exifData.focalLengthIn35mm)
-                    MetadataItemRow("Flash", metadata.exifData.flash)
-                    MetadataItemRow("White Balance", metadata.exifData.whiteBalance)
-                    MetadataItemRow("Metering Mode", metadata.exifData.meteringMode)
-                    MetadataItemRow("Artist / Author", metadata.exifData.artist, isSensitive = true)
-                    MetadataItemRow("Copyright", metadata.exifData.copyright, isSensitive = true)
-                    MetadataItemRow("User Comment", metadata.exifData.userComment, isSensitive = true)
-                    MetadataItemRow("Embedded Thumbnail", if (metadata.exifData.hasThumbnail) "Yes (Present)" else "None")
-                }
-
-                // 4. IPTC & Authorship
-                MetadataSectionCard(
-                    title = "IPTC & Authorship",
-                    icon = Icons.Default.Person,
-                    itemCount = if (metadata.iptcData.hasIptc) 3 else 0,
-                    initiallyExpanded = false
-                ) {
-                    if (metadata.iptcData.hasIptc) {
-                        MetadataItemRow("Creator", metadata.iptcData.creator, isSensitive = true)
-                        MetadataItemRow("Copyright", metadata.iptcData.copyrightNotice, isSensitive = true)
-                        MetadataItemRow("Caption / Headline", metadata.iptcData.caption ?: metadata.iptcData.headline)
-                        MetadataItemRow("Contact", metadata.iptcData.contactInfo, isSensitive = true)
-                    } else {
-                        Text(
-                            text = "No standard IPTC authorship blocks detected.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                // 5. Adobe XMP
-                MetadataSectionCard(
-                    title = "Adobe XMP Properties",
-                    icon = Icons.Default.Description,
-                    itemCount = metadata.xmpData.properties.size,
-                    initiallyExpanded = false
-                ) {
-                    if (metadata.xmpData.hasXmp) {
-                        MetadataItemRow("Namespaces", metadata.xmpData.namespaces.joinToString(", "))
-                        metadata.xmpData.properties.forEach { (k, v) ->
-                            MetadataItemRow(k, v)
-                        }
-                    } else {
-                        Text(
-                            text = "No embedded Adobe XMP XML packet found.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                // 6. PNG Chunks (If PNG)
-                if (metadata.pngData != null) {
-                    MetadataSectionCard(
-                        title = "PNG Chunks Structure",
-                        icon = Icons.Default.GridOn,
-                        itemCount = metadata.pngData.chunks.size,
-                        initiallyExpanded = false,
-                        badgeText = "${metadata.pngData.chunks.size} CHUNKS"
-                    ) {
-                        MetadataItemRow("Color Type", metadata.pngData.colorType)
-                        MetadataItemRow("Bit Depth", metadata.pngData.bitDepth?.let { "$it bits/channel" })
-                        MetadataItemRow("Interlace", metadata.pngData.interlaceMethod)
 
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Chunk Breakdown:",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            text = if (hasAi) "Hidden C2PA, JUMBF, or AI generator metadata markers were identified."
+                            else "No C2PA manifests or known AI generator footprints were found in the file headers.",
+                            fontSize = 12.sp,
+                            color = iOSTextSecondary
                         )
-                        metadata.pngData.chunks.forEach { chunk ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 2.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = chunk.type,
-                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                                    fontSize = 12.sp,
-                                    color = if (chunk.isCritical) AccentPrimary else AccentSecondary
-                                )
-                                Text(
-                                    text = "${chunk.length} bytes • ${chunk.description}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 11.sp
-                                )
+
+                        if (prov.generatorSoftware != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("AI Model / Source: ", fontSize = 13.sp, color = iOSTextSecondary)
+                                Text(prov.generatorSoftware!!, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = iOSSystemIndigo)
+                            }
+                        }
+
+                        if (prov.aiSignals.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            prov.aiSignals.forEach { signal ->
+                                Row(modifier = Modifier.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Text("• ", color = iOSSystemTeal, fontWeight = FontWeight.Bold)
+                                    Text(signal, fontSize = 12.sp, color = iOSTextPrimary)
+                                }
                             }
                         }
                     }
                 }
 
-                // 7. ICC Color Profile
-                MetadataSectionCard(
-                    title = "ICC Color Profile",
-                    icon = Icons.Default.Palette,
-                    itemCount = if (metadata.iccData?.hasProfile == true) 2 else 0,
-                    initiallyExpanded = false
-                ) {
-                    if (metadata.iccData?.hasProfile == true) {
-                        MetadataItemRow("Profile Description", metadata.iccData.profileName)
-                        MetadataItemRow("Color Space", metadata.iccData.colorSpace)
-                        MetadataItemRow("Profile Size", "${metadata.iccData.profileSize} bytes")
+                // GPS Location Section
+                IOSSectionHeader(title = "Location & GPS Privacy")
+                IOSGroupedCard {
+                    val gps = metadata.exifData.gpsCoordinateString
+                    if (gps != null) {
+                        IOSListRow(
+                            title = "Coordinates",
+                            value = gps,
+                            icon = Icons.Default.LocationOn,
+                            iconTint = iOSSystemRed,
+                            isSensitive = true
+                        )
+                        IOSDivider()
+                        IOSListRow(
+                            title = "Latitude",
+                            value = metadata.exifData.gpsLatitude?.toString(),
+                            icon = Icons.Default.Explore,
+                            iconTint = iOSSystemRed,
+                            isSensitive = true
+                        )
+                        IOSDivider()
+                        IOSListRow(
+                            title = "Longitude",
+                            value = metadata.exifData.gpsLongitude?.toString(),
+                            icon = Icons.Default.Explore,
+                            iconTint = iOSSystemRed,
+                            isSensitive = true
+                        )
+                        metadata.exifData.gpsAltitude?.let {
+                            IOSDivider()
+                            IOSListRow(
+                                title = "Altitude",
+                                value = "%.1f m".format(it),
+                                icon = Icons.Default.Terrain,
+                                iconTint = iOSSystemOrange,
+                                isSensitive = true
+                            )
+                        }
                     } else {
-                        Text(
-                            text = "Standard sRGB / No custom ICC profile embedded.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        IOSListRow(
+                            title = "GPS Location",
+                            value = "None (Clean)",
+                            icon = Icons.Default.LocationOff,
+                            iconTint = iOSSystemGreen
                         )
                     }
                 }
 
-                // 8. Content Credentials & AI Provenance (Read-Only)
-                MetadataSectionCard(
-                    title = "Content Credentials & AI Signals",
-                    icon = Icons.Default.AutoAwesome,
-                    itemCount = metadata.provenanceData.aiSignals.size,
-                    initiallyExpanded = metadata.provenanceData.hasProvenance,
-                    badgeText = "READ-ONLY",
-                    badgeColor = AccentTertiary
-                ) {
-                    Text(
-                        text = metadata.provenanceData.notes,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    MetadataItemRow("C2PA Detected", if (metadata.provenanceData.isC2paDetected) "Yes (Manifest Found)" else "No")
-                    MetadataItemRow("JUMBF Box Detected", if (metadata.provenanceData.isJumbfDetected) "Yes" else "No")
-                    MetadataItemRow("Detected Generator", metadata.provenanceData.generatorSoftware)
-                    if (metadata.provenanceData.aiSignals.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Detected Signals:",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = AccentTertiary
-                        )
-                        metadata.provenanceData.aiSignals.forEach { signal ->
-                            Text(
-                                text = "• $signal",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                // Camera Hardware & Capture
+                IOSSectionHeader(title = "Camera & Capture Hardware")
+                IOSGroupedCard {
+                    IOSListRow(title = "Camera Make", value = metadata.exifData.cameraMake ?: "Unknown", icon = Icons.Default.PhotoCamera, iconTint = iOSSystemBlue, isSensitive = true)
+                    IOSDivider()
+                    IOSListRow(title = "Camera Model", value = metadata.exifData.cameraModel ?: "Unknown", icon = Icons.Default.CameraAlt, iconTint = iOSSystemBlue, isSensitive = true)
+                    metadata.exifData.lensModel?.let {
+                        IOSDivider()
+                        IOSListRow(title = "Lens", value = it, icon = Icons.Default.Camera, iconTint = iOSSystemIndigo)
+                    }
+                    metadata.exifData.dateTimeOriginal?.let {
+                        IOSDivider()
+                        IOSListRow(title = "Captured On", value = it, icon = Icons.Default.Schedule, iconTint = iOSSystemOrange, isSensitive = true)
+                    }
+                    metadata.exifData.iso?.let {
+                        IOSDivider()
+                        IOSListRow(title = "ISO", value = it, icon = Icons.Default.ShutterSpeed, iconTint = iOSSystemTeal)
+                    }
+                    metadata.exifData.fNumber?.let {
+                        IOSDivider()
+                        IOSListRow(title = "Aperture", value = it, icon = Icons.Default.Camera, iconTint = iOSSystemIndigo)
+                    }
+                    metadata.exifData.artist?.let {
+                        IOSDivider()
+                        IOSListRow(title = "Author / Artist", value = it, icon = Icons.Default.Person, iconTint = iOSSystemRed, isSensitive = true)
+                    }
+                }
+
+                // PNG Chunks Breakdown (if PNG)
+                if (metadata.pngData != null) {
+                    IOSSectionHeader(title = "PNG Chunk Structure (${metadata.pngData.chunks.size} chunks)")
+                    IOSGroupedCard {
+                        IOSListRow(title = "Color Type", value = metadata.pngData.colorType ?: "RGB", icon = Icons.Default.Palette, iconTint = iOSSystemTeal)
+                        IOSDivider()
+                        IOSListRow(title = "Bit Depth", value = "${metadata.pngData.bitDepth ?: 8} bits", icon = Icons.Default.Layers, iconTint = iOSSystemIndigo)
+
+                        metadata.pngData.chunks.take(8).forEach { chunk ->
+                            IOSDivider()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(chunk.type, fontFamily = FontFamily.Monospace, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (chunk.isCritical) iOSSystemBlue else iOSSystemTeal)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(chunk.description, fontSize = 11.sp, color = iOSTextSecondary, maxLines = 1)
+                                }
+                                Text("${chunk.length} B", fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = iOSTextTertiary)
+                            }
                         }
                     }
                 }
 
-                // 9. Technical Hashes & Hex Viewer
-                HexViewerCard(technicalData = metadata.technicalData)
+                // Technical Checksums Card
+                IOSSectionHeader(title = "Digital Checksums & Hashes")
+                IOSGroupedCard {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        HashItem("SHA-256", metadata.technicalData.sha256) {
+                            clipboard.setText(AnnotatedString(metadata.technicalData.sha256))
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HashItem("MD5", metadata.technicalData.md5) {
+                            clipboard.setText(AnnotatedString(metadata.technicalData.md5))
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HashItem("Signature", metadata.technicalData.magicSignature) {
+                            clipboard.setText(AnnotatedString(metadata.technicalData.magicSignature))
+                        }
+                    }
+                }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Action Bar: Clean or Verify
+                // Action Bar
+                Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Button(
                         onClick = { showCleanOptionsDialog = true },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentPrimary)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
                     ) {
                         Icon(Icons.Default.CleaningServices, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Clean This Image")
+                        Text("Clean This Photo", fontWeight = FontWeight.SemiBold)
                     }
 
                     if (item.status == ProcessingStatus.COMPLETED) {
-                        OutlinedButton(
+                        Button(
                             onClick = { onNavigateToVerification(item.id) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = iOSSystemGreen)
                         ) {
                             Icon(Icons.Default.VerifiedUser, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Verify Output")
+                            Text("Audit Report", fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun HashItem(label: String, value: String, onCopy: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(label, fontSize = 11.sp, color = iOSTextSecondary)
+            Text(value, fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = iOSTextPrimary)
+        }
+        IconButton(onClick = onCopy, modifier = Modifier.size(28.dp)) {
+            Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = iOSSystemBlue, modifier = Modifier.size(16.dp))
         }
     }
 }
