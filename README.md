@@ -55,7 +55,7 @@ MetaClean is an offline-first image metadata inspection and personal privacy uti
 ## 🏗️ Architecture & Tech Stack
 
 ```
-com.metaclean.app/
+com.inyogeshwar.metaclean/
 ├── core/
 │   ├── common/           # Dispatchers, results, constants
 │   ├── file/             # FileUtils, HashUtils, HexUtils, ZipUtils
