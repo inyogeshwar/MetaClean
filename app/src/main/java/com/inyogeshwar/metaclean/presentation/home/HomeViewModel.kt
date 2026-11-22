@@ -35,6 +35,7 @@ class HomeViewModel @Inject constructor(
 
     val mediaQueue: StateFlow<List<MediaItem>> = metadataRepository.mediaQueue
     val settings: StateFlow<AppSettings> = settingsRepository.settingsState
+    val selectedItem: StateFlow<MediaItem?> = metadataRepository.selectedItemForInspection
 
     val historyRecords: StateFlow<List<HistoryRecord>> = historyRepository.getHistoryRecords()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -44,13 +45,7 @@ class HomeViewModel @Inject constructor(
 
     fun onImagesSelected(uris: List<Uri>) {
         if (uris.isEmpty()) return
-        if (settings.value.autoSaveOnPick) {
-            quickCleanImages(uris)
-        } else {
-            viewModelScope.launch {
-                metadataRepository.addMediaUris(uris)
-            }
-        }
+        quickCleanImages(uris)
     }
 
     fun quickCleanImages(uris: List<Uri>) {
@@ -62,6 +57,22 @@ class HomeViewModel @Inject constructor(
             }
             _quickCleanState.value = QuickCleanUiState(isRunning = false, current = uris.size, total = uris.size, result = res)
         }
+    }
+
+    fun setSaveDestinationMode(mode: com.inyogeshwar.metaclean.domain.repository.SaveDestinationMode) {
+        viewModelScope.launch {
+            settingsRepository.updateSaveDestinationMode(mode)
+        }
+    }
+
+    fun setTheme(theme: com.inyogeshwar.metaclean.domain.repository.AppThemeMode) {
+        viewModelScope.launch {
+            settingsRepository.updateThemeMode(theme)
+        }
+    }
+
+    fun selectItemForInspection(id: String?) {
+        metadataRepository.selectItemForInspection(id)
     }
 
     fun dismissQuickCleanResult() {

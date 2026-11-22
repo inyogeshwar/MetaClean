@@ -10,20 +10,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.inyogeshwar.metaclean.core.ui.theme.MetaCleanTheme
 import com.inyogeshwar.metaclean.domain.repository.AppThemeMode
 import com.inyogeshwar.metaclean.domain.repository.MetadataRepository
 import com.inyogeshwar.metaclean.domain.repository.SettingsRepository
-import com.inyogeshwar.metaclean.presentation.navigation.BottomNavBar
-import com.inyogeshwar.metaclean.presentation.navigation.NavGraph
-import com.inyogeshwar.metaclean.presentation.navigation.Screen
+import com.inyogeshwar.metaclean.presentation.home.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,27 +54,11 @@ class MainActivity : ComponentActivity() {
             }
 
             MetaCleanTheme(darkTheme = isDark) {
-                val navController = rememberNavController()
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-
-                val showBottomNav = currentRoute != Screen.Verification.route
-
-                Scaffold(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        if (showBottomNav) {
-                            BottomNavBar(
-                                navController = navController,
-                                queueCount = mediaQueue.size
-                            )
-                        }
-                    }
-                ) { innerPadding ->
-                    NavGraph(
-                        navController = navController,
-                        paddingValues = innerPadding
-                    )
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                ) {
+                    HomeScreen()
                 }
             }
         }
