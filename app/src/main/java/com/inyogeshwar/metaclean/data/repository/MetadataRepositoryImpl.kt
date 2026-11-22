@@ -13,6 +13,8 @@ import com.inyogeshwar.metaclean.domain.model.MediaItem
 import com.inyogeshwar.metaclean.domain.model.ProcessingStatus
 import com.inyogeshwar.metaclean.domain.repository.HistoryRepository
 import com.inyogeshwar.metaclean.domain.repository.MetadataRepository
+import com.inyogeshwar.metaclean.domain.repository.QuickCleanResult
+import com.inyogeshwar.metaclean.domain.repository.SaveDestinationMode
 import com.inyogeshwar.metaclean.domain.repository.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -313,6 +315,98 @@ class MetadataRepositoryImpl @Inject constructor(
         }
 
         ZipUtils.createZipArchive(context, filesToZip, outputStream, onProgress)
+    }
+
+    override suspend fun quickCleanAndAutoSave(
+        uris: List<Uri>,
+        onProgress: (current: Int, total: Int) -> Unit
+    ): QuickCleanResult = withContext(Dispatchers.IO) {
+        val settings = settingsRepository.settingsState.value
+        val options = CleanOptions.ALL_PRIVACY
+
+        var successCount = 0
+        var failureCount = 0
+        var savedToGalleryCount = 0
+        var overwrittenCount = 0
+        var totalBytesSaved: Long = 0
+        val savedUris = mutableListOf<Uri>()
+        val removedTagsSample = mutableSetOf<String>()
+
+        uris.forEachIndexed { index, uri ->
+            onProgress(index + 1, uris.size)
+            try {
+                val fileName = FileUtils.getFileName(context, uri)
+                val mimeType = FileUtils.getMimeType(context, uri)
+
+                val (cleanedFile, verification) = PrivacyCleaner.cleanImage(
+                    context = context,
+                    inputUri = uri,
+                    options = options
+                )
+
+                var wasOverwritten = false
+                if (settings.saveDestinationMode == SaveDestinationMode.OVERWRITE_ORIGINAL) {
+                    wasOverwritten = FileUtils.overwriteOriginal(context, cleanedFile, uri)
+                    if (wasOverwritten) {
+                        overwrittenCount++
+                        savedUris.add(uri)
+                    }
+                }
+
+                // If not overwritten (either mode is GALLERY_ALBUM or overwrite failed), save to Public Gallery album
+                if (!wasOverwritten) {
+                    val savedUri = FileUtils.saveImageToPublicGallery(
+                        context = context,
+                        sourceFile = cleanedFile,
+                        originalFileName = fileName,
+                        mimeType = mimeType,
+                        suffix = settings.outputNamingSuffix
+                    )
+                    if (savedUri != null) {
+                        savedToGalleryCount++
+                        savedUris.add(savedUri)
+                    }
+                }
+
+                successCount++
+                totalBytesSaved += verification.sizeDifferenceBytes.coerceAtLeast(0L)
+                removedTagsSample.addAll(verification.removedFields)
+
+            } catch (e: Exception) {
+                failureCount++
+            }
+        }
+
+        // Record to Room history
+        if (successCount > 0) {
+            historyRepository.saveHistoryRecord(
+                HistoryRecord(
+                    timestamp = System.currentTimeMillis(),
+                    formattedDate = "",
+                    totalFiles = uris.size,
+                    successCount = successCount,
+                    failureCount = failureCount,
+                    processingType = "1-Tap Instant Clean",
+                    removedTagsSummary = if (removedTagsSample.isNotEmpty()) {
+                        removedTagsSample.take(4).joinToString(", ")
+                    } else "Full Privacy & AI Scrub",
+                    bytesSaved = totalBytesSaved
+                )
+            )
+        }
+
+        // Also add these items to mediaQueue so user can inspect them if they want!
+        addMediaUris(uris)
+
+        QuickCleanResult(
+            totalCount = uris.size,
+            successCount = successCount,
+            failureCount = failureCount,
+            savedToGalleryCount = savedToGalleryCount,
+            overwrittenCount = overwrittenCount,
+            totalBytesSaved = totalBytesSaved,
+            savedUris = savedUris
+        )
     }
 
     private fun updateItemStatus(id: String, status: ProcessingStatus, progress: Float) {

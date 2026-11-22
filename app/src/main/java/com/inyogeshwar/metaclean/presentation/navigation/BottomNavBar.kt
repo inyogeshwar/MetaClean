@@ -36,7 +36,7 @@ fun BottomNavBar(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding(),
-        containerColor = iOSBackgroundDark,
+        containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp
     ) {
         items.forEach { screen ->

@@ -1,10 +1,14 @@
 package com.inyogeshwar.metaclean.core.file
 
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import java.io.File
+import java.io.FileInputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.DecimalFormat
@@ -146,5 +150,74 @@ object FileUtils {
         } catch (e: Exception) {
             // Ignore clean up errors
         }
+    }
+
+    /**
+     * Saves a cleaned image directly into Android's public gallery (Pictures/MetaClean).
+     * Works on Android 10+ (Scoped Storage) and earlier without requiring storage permissions.
+     * The photo is immediately visible in Google Photos, Gallery, and other gallery apps.
+     */
+    fun saveImageToPublicGallery(
+        context: Context,
+        sourceFile: File,
+        originalFileName: String,
+        mimeType: String,
+        suffix: String = ""
+    ): Uri? {
+        try {
+            val extension = getExtensionFromMime(mimeType)
+            val baseName = originalFileName.substringBeforeLast(".")
+            val displayName = if (suffix.isNotEmpty() && !baseName.endsWith(suffix)) {
+                "${baseName}${suffix}.${extension}"
+            } else {
+                originalFileName
+            }
+
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+                put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MetaClean")
+                    put(MediaStore.Images.Media.IS_PENDING, 1)
+                }
+            }
+
+            val resolver = context.contentResolver
+            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            if (uri != null) {
+                resolver.openOutputStream(uri)?.use { out ->
+                    FileInputStream(sourceFile).use { input ->
+                        copyStream(input, out)
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.clear()
+                    contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                    resolver.update(uri, contentValues, null, null)
+                }
+                return uri
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    /**
+     * Overwrites the original image in place via ContentResolver / File if write permissions allow.
+     * Returns true if successfully overwritten, false if restricted by Scoped Storage or read-only provider.
+     */
+    fun overwriteOriginal(context: Context, sourceFile: File, originalUri: Uri): Boolean {
+        try {
+            context.contentResolver.openOutputStream(originalUri, "wt")?.use { out ->
+                FileInputStream(sourceFile).use { input ->
+                    copyStream(input, out)
+                }
+                return true
+            }
+        } catch (e: Exception) {
+            // Cannot overwrite in-place (likely Scoped Storage restriction)
+        }
+        return false
     }
 }

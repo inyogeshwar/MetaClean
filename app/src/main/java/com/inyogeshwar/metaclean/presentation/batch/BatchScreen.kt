@@ -82,7 +82,7 @@ fun BatchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(iOSBackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // iOS Navigation Header
         Row(
@@ -97,7 +97,7 @@ fun BatchScreen(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.5).sp,
-                color = iOSTextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

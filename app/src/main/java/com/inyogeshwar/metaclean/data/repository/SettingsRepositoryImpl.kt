@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.inyogeshwar.metaclean.domain.repository.AppSettings
 import com.inyogeshwar.metaclean.domain.repository.AppThemeMode
 import com.inyogeshwar.metaclean.domain.repository.ExportFormat
+import com.inyogeshwar.metaclean.domain.repository.SaveDestinationMode
 import com.inyogeshwar.metaclean.domain.repository.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,15 +28,19 @@ class SettingsRepositoryImpl @Inject constructor(
         val themeStr = prefs.getString("theme_mode", AppThemeMode.DARK.name) ?: AppThemeMode.DARK.name
         val exportStr = prefs.getString("export_format", ExportFormat.ORIGINAL.name) ?: ExportFormat.ORIGINAL.name
         val suffix = prefs.getString("naming_suffix", "_clean") ?: "_clean"
-        val confirm = prefs.getBoolean("confirm_before_processing", true)
+        val confirm = prefs.getBoolean("confirm_before_processing", false)
         val autoClear = prefs.getBoolean("auto_clear_temp", true)
+        val saveModeStr = prefs.getString("save_destination_mode", SaveDestinationMode.GALLERY_ALBUM.name) ?: SaveDestinationMode.GALLERY_ALBUM.name
+        val autoSave = prefs.getBoolean("auto_save_on_pick", true)
 
         return AppSettings(
             themeMode = try { AppThemeMode.valueOf(themeStr) } catch (e: Exception) { AppThemeMode.DARK },
             exportFormat = try { ExportFormat.valueOf(exportStr) } catch (e: Exception) { ExportFormat.ORIGINAL },
             outputNamingSuffix = suffix,
             confirmBeforeProcessing = confirm,
-            autoClearTempFiles = autoClear
+            autoClearTempFiles = autoClear,
+            saveDestinationMode = try { SaveDestinationMode.valueOf(saveModeStr) } catch (e: Exception) { SaveDestinationMode.GALLERY_ALBUM },
+            autoSaveOnPick = autoSave
         )
     }
 
@@ -62,5 +67,15 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateAutoClearTempFiles(autoClear: Boolean) {
         prefs.edit().putBoolean("auto_clear_temp", autoClear).apply()
         _settingsState.value = _settingsState.value.copy(autoClearTempFiles = autoClear)
+    }
+
+    override suspend fun updateSaveDestinationMode(mode: SaveDestinationMode) {
+        prefs.edit().putString("save_destination_mode", mode.name).apply()
+        _settingsState.value = _settingsState.value.copy(saveDestinationMode = mode)
+    }
+
+    override suspend fun updateAutoSaveOnPick(autoSave: Boolean) {
+        prefs.edit().putBoolean("auto_save_on_pick", autoSave).apply()
+        _settingsState.value = _settingsState.value.copy(autoSaveOnPick = autoSave)
     }
 }

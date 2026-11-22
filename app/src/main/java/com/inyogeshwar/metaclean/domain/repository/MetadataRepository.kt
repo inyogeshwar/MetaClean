@@ -7,6 +7,16 @@ import com.inyogeshwar.metaclean.domain.model.MediaItem
 import kotlinx.coroutines.flow.StateFlow
 import java.io.OutputStream
 
+data class QuickCleanResult(
+    val totalCount: Int,
+    val successCount: Int,
+    val failureCount: Int,
+    val savedToGalleryCount: Int,
+    val overwrittenCount: Int,
+    val totalBytesSaved: Long,
+    val savedUris: List<Uri>
+)
+
 interface MetadataRepository {
     val mediaQueue: StateFlow<List<MediaItem>>
     val isProcessing: StateFlow<Boolean>
@@ -28,4 +38,14 @@ interface MetadataRepository {
 
     suspend fun exportSingleImage(itemId: String, destinationUri: Uri): Boolean
     suspend fun exportZipArchive(outputStream: OutputStream, onProgress: (Int, Int) -> Unit): Boolean
+
+    /**
+     * 1-Tap Quick Clean and Auto-Save:
+     * Cleans metadata (GPS, Camera specs, AI labels/C2PA) and immediately saves to Gallery / Overwrites original
+     * in a single seamless operation.
+     */
+    suspend fun quickCleanAndAutoSave(
+        uris: List<Uri>,
+        onProgress: (current: Int, total: Int) -> Unit
+    ): QuickCleanResult
 }

@@ -61,7 +61,7 @@ fun HistoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(iOSBackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Row(
             modifier = Modifier
@@ -75,7 +75,7 @@ fun HistoryScreen(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.5).sp,
-                color = iOSTextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (historyRecords.isNotEmpty()) {

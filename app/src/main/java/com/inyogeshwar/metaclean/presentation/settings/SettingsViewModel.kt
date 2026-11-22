@@ -48,6 +48,18 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setSaveDestinationMode(mode: SaveDestinationMode) {
+        viewModelScope.launch {
+            settingsRepository.updateSaveDestinationMode(mode)
+        }
+    }
+
+    fun setAutoSaveOnPick(autoSave: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateAutoSaveOnPick(autoSave)
+        }
+    }
+
     fun clearAllHistory() {
         viewModelScope.launch {
             historyRepository.clearHistory()

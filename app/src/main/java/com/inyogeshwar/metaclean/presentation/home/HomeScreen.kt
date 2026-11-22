@@ -1,12 +1,12 @@
 package com.inyogeshwar.metaclean.presentation.home
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,15 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.inyogeshwar.metaclean.R
-import com.inyogeshwar.metaclean.core.file.FileUtils
 import com.inyogeshwar.metaclean.core.ui.components.*
 import com.inyogeshwar.metaclean.core.ui.theme.*
+import com.inyogeshwar.metaclean.domain.repository.SaveDestinationMode
 
 @Composable
 fun HomeScreen(
@@ -37,8 +39,20 @@ fun HomeScreen(
     onNavigateToBatch: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val mediaQueue by viewModel.mediaQueue.collectAsState()
     val historyRecords by viewModel.historyRecords.collectAsState()
+    val quickCleanState by viewModel.quickCleanState.collectAsState()
+    val settings by viewModel.settings.collectAsState()
+
+    // 1-Tap Quick Clean Picker (Directly scrubs & auto-saves)
+    val instantCleanPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 100)
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            viewModel.quickCleanImages(uris)
+        }
+    }
 
     val singlePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -51,7 +65,9 @@ fun HomeScreen(
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             viewModel.onImagesSelected(uris)
-            onNavigateToBatch()
+            if (!settings.autoSaveOnPick) {
+                onNavigateToBatch()
+            }
         }
     }
 
@@ -60,7 +76,9 @@ fun HomeScreen(
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             viewModel.onImagesSelected(uris)
-            onNavigateToBatch()
+            if (!settings.autoSaveOnPick) {
+                onNavigateToBatch()
+            }
         }
     }
 
@@ -70,7 +88,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(iOSBackgroundDark)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
@@ -88,12 +106,12 @@ fun HomeScreen(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = (-0.5).sp,
-                    color = iOSTextPrimary
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Privacy & Metadata Toolkit",
                     fontSize = 13.sp,
-                    color = iOSTextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -110,7 +128,15 @@ fun HomeScreen(
             }
         }
 
-        // Hero Selection Card (Cupertino Action Center)
+        // Circular Privacy Shield & Metric Ring (iOS Health/Utility Centerpiece)
+        IOSCircularShieldMeter(
+            totalCleaned = totalCleaned,
+            totalBytesSaved = totalSaved
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Hero 1-Tap Action Card (Cupertino 1-Tap Clean Center)
         IOSGroupedCard {
             Column(
                 modifier = Modifier
@@ -120,40 +146,72 @@ fun HomeScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(54.dp)
                         .clip(CircleShape)
                         .background(iOSSystemBlue.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.AddPhotoAlternate,
+                        imageVector = Icons.Default.Bolt,
                         contentDescription = null,
                         tint = iOSSystemBlue,
                         modifier = Modifier.size(30.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Clean Photos & AI Labels",
+                    text = "1-Tap Clean & Auto-Save",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = iOSTextPrimary
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
+                val saveTargetText = if (settings.saveDestinationMode == SaveDestinationMode.OVERWRITE_ORIGINAL) {
+                    "Select photos to instantly scrub GPS, camera details & AI labels and update the original image directly."
+                } else {
+                    "Select photos to instantly scrub GPS, camera details & AI labels and auto-save directly to your Gallery (Pictures/MetaClean)."
+                }
+
                 Text(
-                    text = "Strip GPS, camera hardware specs, and C2PA / JUMBF AI footprints from photos before sharing.",
+                    text = saveTargetText,
                     fontSize = 13.sp,
-                    color = iOSTextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 18.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
+                // Primary 1-Tap Instant Clean Button
+                Button(
+                    onClick = {
+                        instantCleanPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
+                ) {
+                    Icon(Icons.Default.Bolt, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Instant Clean & Save",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Secondary Options Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -164,11 +222,16 @@ fun HomeScreen(
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .height(44.dp),
+                            .height(42.dp),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = iOSCardElevated)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
-                        Text("Single Photo", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = iOSTextPrimary)
+                        Text(
+                            "Single Photo",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
 
                     Button(
@@ -176,23 +239,38 @@ fun HomeScreen(
                             multiplePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         },
                         modifier = Modifier
-                            .weight(1.3f)
-                            .height(44.dp),
+                            .weight(1.2f)
+                            .height(42.dp),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = iOSSystemBlue)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
-                        Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Default.PhotoLibrary,
+                            contentDescription = null,
+                            tint = iOSSystemBlue,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Select Multiple", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                        Text(
+                            "Select Multi",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 TextButton(
                     onClick = { safPickerLauncher.launch(arrayOf("image/*")) }
                 ) {
-                    Icon(Icons.Default.FolderOpen, contentDescription = null, tint = iOSSystemBlue, modifier = Modifier.size(16.dp))
+                    Icon(
+                        Icons.Default.FolderOpen,
+                        contentDescription = null,
+                        tint = iOSSystemBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Browse Storage Files (SAF)", fontSize = 13.sp, color = iOSSystemBlue)
                 }
@@ -239,24 +317,6 @@ fun HomeScreen(
             )
         }
 
-        // Statistics Inset Group
-        IOSSectionHeader(title = "Statistics & History")
-        IOSGroupedCard {
-            IOSListRow(
-                title = "Total Photos Scrubbed",
-                value = "$totalCleaned",
-                icon = Icons.Default.CheckCircle,
-                iconTint = iOSSystemGreen
-            )
-            IOSDivider()
-            IOSListRow(
-                title = "Stripped Footprint",
-                value = FileUtils.formatFileSize(totalSaved),
-                icon = Icons.Default.DataUsage,
-                iconTint = iOSSystemTeal
-            )
-        }
-
         // Format Support Inset Group
         IOSSectionHeader(title = "Format Engine")
         IOSGroupedCard {
@@ -293,8 +353,8 @@ fun HomeScreen(
             )
             IOSDivider()
             IOSListRow(
-                title = "Originals Never Overwritten",
-                value = "Isolated Copies",
+                title = "Safe Auto-Save",
+                value = if (settings.saveDestinationMode == SaveDestinationMode.OVERWRITE_ORIGINAL) "Overwrite In-Place" else "Saved to Gallery",
                 icon = Icons.Default.Lock,
                 iconTint = iOSSystemBlue
             )
@@ -309,4 +369,32 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
     }
+
+    // iOS Quick Clean Progress / Completion Dialog
+    IOSQuickCleanModal(
+        isRunning = quickCleanState.isRunning,
+        current = quickCleanState.current,
+        total = quickCleanState.total,
+        result = quickCleanState.result,
+        onDismiss = { viewModel.dismissQuickCleanResult() },
+        onShare = {
+            val uris = quickCleanState.result?.savedUris ?: emptyList()
+            if (uris.isNotEmpty()) {
+                val shareIntent = if (uris.size == 1) {
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_STREAM, uris.first())
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                } else {
+                    Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                        type = "image/*"
+                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share Cleaned Images"))
+            }
+        }
+    )
 }

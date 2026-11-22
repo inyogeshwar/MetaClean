@@ -65,7 +65,7 @@ fun VerificationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Audit Report", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = iOSTextPrimary) },
+                title = { Text("Audit Report", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = iOSSystemBlue)
@@ -84,7 +84,7 @@ fun VerificationScreen(
                         Icon(Icons.Default.SaveAlt, contentDescription = "Save", tint = iOSSystemBlue)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = iOSBackgroundDark)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { padding ->
@@ -107,7 +107,7 @@ fun VerificationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(iOSBackgroundDark)
+                    .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
